@@ -1,4 +1,4 @@
-# NumNet+v2 pretraining
+# NumNet+v2 pretraining on GenBERT data
 
 Pretraining NumNet+v2 on synthetic numeric and textual data, the way GenBERT was.
 
