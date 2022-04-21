@@ -18,7 +18,7 @@ CODE_DIR=${BASE_DIR}
 
 if [ ${TMSPAN} = tag_mspan ]; then
   echo "Use tag_mspan model..."
-  MODEL_CONFIG="--gcn_steps 3 --use_gcn --tag_mspan"
+  MODEL_CONFIG="--tag_mspan"
   # Numeric data
   CACHED_TRAIN_NUMERIC=${DATA_DIR}/tmspan_cached_roberta_numeric_train.pkl
   CACHED_DEV_NUMERIC=${DATA_DIR}/tmspan_cached_roberta_numeric_dev.pkl
@@ -35,7 +35,7 @@ if [ ${TMSPAN} = tag_mspan ]; then
   fi
 else
   echo "Use mspan model..."
-  MODEL_CONFIG="--gcn_steps 3 --use_gcn"
+  MODEL_CONFIG=""
   # Numeric data
   CACHED_TRAIN_NUMERIC=${DATA_DIR}/cached_roberta_numeric_train.pkl
   CACHED_DEV_NUMERIC=${DATA_DIR}/cached_roberta_numeric_dev.pkl

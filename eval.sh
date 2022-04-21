@@ -16,10 +16,10 @@ BERT_CONFIG="--roberta_model ${PRETRAIN_PATH}"
 
 if [ ${TMSPAN} = tag_mspan ]; then
     echo "Use tag_mspan model..."
-    MODEL_CONFIG="--gcn_steps 3 --use_gcn --tag_mspan"
+    MODEL_CONFIG="--tag_mspan"
 else
     echo "Use mspan model..."
-    MODEL_CONFIG="--gcn_steps 3 --use_gcn"
+    MODEL_CONFIG=""
 fi
 
 echo "Starting evaluation..."
