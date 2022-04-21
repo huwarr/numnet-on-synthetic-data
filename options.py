@@ -89,8 +89,10 @@ def add_model_args(parser: ArgumentParser):
 def add_inference_args(parser: ArgumentParser):
     parser.add_argument("--pre_path", type=str, help="Prepath")
     parser.add_argument("--data_mode", type=str, help="inference data mode")
-    parser.add_argument("--inf_path", type=str, help="inference data path.")
-    parser.add_argument("--dump_path", type=str, help="inference data path.")
+    parser.add_argument("--inf_path_numeric", type=str, help="inference numeric data path.")
+    parser.add_argument("--inf_path_textual", type=str, help="inference textual data path.")
+    parser.add_argument("--dump_path_numeric", type=str, help="inference dump path for numeric data.")
+    parser.add_argument("--dump_path_textual", type=str, help="inference dump path for textual data.")
     parser.add_argument(
         "--eval_batch_size", type=int, default=32, help="eval batch size."
     )

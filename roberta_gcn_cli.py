@@ -43,16 +43,21 @@ set_environment(args.seed, args.cuda)
 
 
 def main():
-    best_result = float("-inf")
+    best_result = (float("-inf"), float("-inf"))
     logger.info("Loading data...")
     if not args.tag_mspan:
-        train_itr = DropBatchGen(args, data_mode="train", tokenizer=tokenizer)
-        dev_itr = DropBatchGen(args, data_mode="dev", tokenizer=tokenizer)
+        train_itr_num = DropBatchGen(args, data_type='numeric', data_mode="train", tokenizer=tokenizer)
+        dev_itr_num = DropBatchGen(args, data_type='numeric', data_mode="dev", tokenizer=tokenizer)
+        train_itr_text = DropBatchGen(args, data_type='textual', data_mode="train", tokenizer=tokenizer)
+        dev_itr_text = DropBatchGen(args, data_type='textual', data_mode="dev", tokenizer=tokenizer)
     else:
-        train_itr = TDropBatchGen(args, data_mode="train", tokenizer=tokenizer)
-        dev_itr = TDropBatchGen(args, data_mode="dev", tokenizer=tokenizer)
+        train_itr_num = TDropBatchGen(args, data_type='numeric', data_mode="train", tokenizer=tokenizer)
+        dev_itr_num = TDropBatchGen(args, data_type='numeric', data_mode="dev", tokenizer=tokenizer)
+        train_itr_text = TDropBatchGen(args, data_type='textual', data_mode="train", tokenizer=tokenizer)
+        dev_itr_text = TDropBatchGen(args, data_type='textual', data_mode="dev", tokenizer=tokenizer)
+    
     num_train_steps = int(
-        args.max_epoch * len(train_itr) / args.gradient_accumulation_steps
+        args.max_epoch * len(train_itr_text) / args.gradient_accumulation_steps
     )
     logger.info("Num update steps {}!".format(num_train_steps))
 
@@ -82,26 +87,61 @@ def main():
 
     train_start = datetime.now()
     first = True
-
+    updates_diff = 0
+    # For stopping criteria
+    loss_prev = float('inf')
+    loss_curr = float('inf')
     for epoch in range(1, args.max_epoch + 1):
         model.avg_reset()
         if not first:
-            train_itr.reset()
+            # Shuffle training datasets
+            # train_itr_num.reset()
+            train_itr_text.reset()
         first = False
         logger.info("At epoch {}".format(epoch))
-        for step, batch in enumerate(train_itr):
+        # Update losses for stopping criteria
+        loss_prev = loss_curr
+        loss_curr = 0.
+        count = 0
+        # Like in GenBERT, loop iterates through textual batches
+        for step, batch in enumerate(train_itr_text):
+            # Textual data
             model.update(batch)
+            updates_1 = model.updates
+            train_loss_text = model.train_loss.avg
+            train_em_text = model.em_avg.avg
+            train_f1_text = model.f1_avg.avg
+            
+            # Numeric data
+            while True:
+                try:
+                    batch = next(train_itr_num)  # sample next batch from numeric train data 
+                    break
+                except StopIteration:       # end of epoch: reset and shuffle
+                    train_itr_num.reset()
+            model.update(batch)
+            updates_2 = model.updates
+            train_loss_num = model.train_loss.avg
+            train_em_num = model.em_avg.avg
+            train_f1_num = model.f1_avg.avg
+
+            updates_diff += updates_2 - updates_1
+            updates = updates_2 - updates_diff
+
             if (
-                model.step % (args.log_per_updates * args.gradient_accumulation_steps)
+                (step + 1) % args.gradient_accumulation_steps
                 == 0
-                or model.step == 1
+                or step == 1
             ):
                 logger.info(
-                    "Updates[{0:6}] train loss[{1:.5f}] train em[{2:.5f}] f1[{3:.5f}] remaining[{4}]".format(
-                        model.updates,
-                        model.train_loss.avg,
-                        model.em_avg.avg,
-                        model.f1_avg.avg,
+                    "Updates[{0:6}], Textual: train loss[{1:.5f}] train em[{2:.5f}] f1[{3:.5f}], Numeric: train loss[{4:.5f}] train em[{5:.5f}] f1[{6:.5f}], remaining[{7}]".format(
+                        updates,
+                        train_loss_text,
+                        train_em_text,
+                        train_f1_text,
+                        train_loss_num,
+                        train_em_num,
+                        train_f1_num,
                         str(
                             (datetime.now() - train_start)
                             / (step + 1)
@@ -109,19 +149,35 @@ def main():
                         ).split(".")[0],
                     )
                 )
+                loss_curr += model.train_loss.sum
+                count += model.train_loss.count
                 model.avg_reset()
-        total_num, eval_loss, eval_em, eval_f1 = model.evaluate(dev_itr)
+
+        loss_curr /= count
+        total_num_text, eval_loss_text, eval_em_text, eval_f1_text = model.evaluate(dev_itr_text)
+        total_num_num, eval_loss_num, eval_em_num, eval_f1_num = model.evaluate(dev_itr_num)
+
         logger.info(
-            "Eval {} examples, result in epoch {}, eval loss {}, eval em {} eval f1 {}.".format(
-                total_num, epoch, eval_loss, eval_em, eval_f1
+            "Eval, Textual: {0:6} examples, result in epoch {1:.5f}, eval loss {2:.5f}, eval em {3:.5f} eval f1 {4:.5f}, Numeric: {5:6} examples, result in epoch {6:.5f}, eval loss {7:.5f}, eval em {8:.5f} eval f1 {9:.5f}.".format(
+                total_num_text, eval_loss_text, eval_em_text, eval_f1_text, total_num_num, eval_loss_num, eval_em_num, eval_f1_num
             )
         )
-
-        if eval_f1 > best_result:
+        # Like in GenBERT pretraining scheme, update best result according to score on textual data
+        if eval_f1_text > best_result[0]:
             save_prefix = os.path.join(args.save_dir, "checkpoint_best")
             model.save(save_prefix, epoch)
-            best_result = eval_f1
-            logger.info("Best eval F1 {} at epoch {}".format(best_result, epoch))
+            best_result[0] = eval_f1_text
+            best_result[1] = eval_f1_num
+            logger.info(
+                "Best textual eval F1 {0:.5f}, with numeric eval F1 {1:.5f}, at epoch {3}".format(
+                    best_result[0], best_result[1], epoch
+                )
+            )
+        
+        # Stopping criteria
+        if abs(loss_curr - loss_prev) < args.eps:
+            logger.info("Optimization has converged, at epoch {}".format(epoch))
+            break
 
     logger.info(
         "done training in {} seconds!".format((datetime.now() - train_start).seconds)

@@ -52,32 +52,62 @@ network.load_state_dict(torch.load(args.pre_path))
 print("Load data from {}.".format(args.inf_path))
 tokenizer = RobertaTokenizer.from_pretrained(args.roberta_model)
 if args.tag_mspan:
-    inf_iter = TDropBatchGen(
+    inf_iter_num = TDropBatchGen(
         args,
         tokenizer,
         TDropReader(
             tokenizer, passage_length_limit=463, question_length_limit=46
-        )._read(args.inf_path),
+        )._read(args.inf_path_numeric),
+    )
+    inf_iter_text = TDropBatchGen(
+        args,
+        tokenizer,
+        TDropReader(
+            tokenizer, passage_length_limit=463, question_length_limit=46
+        )._read(args.inf_path_textual),
     )
 else:
-    inf_iter = DropBatchGen(
+    inf_iter_num = DropBatchGen(
         args,
         tokenizer,
         DropReader(tokenizer, passage_length_limit=463, question_length_limit=46)._read(
-            args.inf_path
+            args.inf_path_numeric
+        ),
+    )
+    inf_iter_text = DropBatchGen(
+        args,
+        tokenizer,
+        DropReader(tokenizer, passage_length_limit=463, question_length_limit=46)._read(
+            args.inf_path_textual
         ),
     )
 
 print("Start inference...")
-result = {}
 network.eval()
+
+# Numeric data
+print("Numeric data...")
+result = {}
 with torch.no_grad():
-    for batch in tqdm(inf_iter):
+    for batch in tqdm(inf_iter_num):
+        output_dict = network(**batch)
+        for i in range(len(output_dict["question_id"])):
+            result[output_dict["question_id"][i]] = output_dict["answer"][i][
+                "predicted_answer"
+            ]
+with open(args.dump_path_numeric, "w", encoding="utf8") as f:
+    json.dump(result, f)
+
+# Textual data
+print("Textual data...")
+result = {}
+with torch.no_grad():
+    for batch in tqdm(inf_iter_text):
         output_dict = network(**batch)
         for i in range(len(output_dict["question_id"])):
             result[output_dict["question_id"][i]] = output_dict["answer"][i][
                 "predicted_answer"
             ]
 
-with open(args.dump_path, "w", encoding="utf8") as f:
+with open(args.dump_path_textual, "w", encoding="utf8") as f:
     json.dump(result, f)
