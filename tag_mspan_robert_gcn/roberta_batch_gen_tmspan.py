@@ -6,14 +6,14 @@ from .token import Token
 
 
 class DropBatchGen(object):
-    def __init__(self, args, data_mode, tokenizer, padding_idx=1):
+    def __init__(self, args, data_type, data_mode, tokenizer, padding_idx=1):
         self.args = args
         self.cls_idx = tokenizer.convert_tokens_to_ids(tokenizer.cls_token)
         self.sep_idx = tokenizer.convert_tokens_to_ids(tokenizer.sep_token)
         self.padding_idx = padding_idx
         self.is_train = data_mode == "train"
         self.vocab_size = len(tokenizer)
-        dpath = "tmspan_cached_roberta_{}.pkl".format(data_mode)
+        dpath = "tmspan_cached_roberta_{}_{}.pkl".format(data_type, data_mode)
         with open(os.path.join(args.data_dir, dpath), "rb") as f:
             print("Load data from {}.".format(dpath))
             data = pickle.load(f)
