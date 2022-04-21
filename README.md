@@ -2,7 +2,7 @@
 
 Pretraining NumNet+ on synthetic numeric and textual data, the way GenBERT was.
 
-### Sources
+## Sources
 
 Data and pretraining scheme: [github](https://github.com/ag1988/injecting_numeracy/tree/master/pre_training)
 
