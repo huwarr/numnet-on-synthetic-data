@@ -29,23 +29,23 @@ if [ ${TMSPAN} = tag_mspan ]; then
     # Train
     sh pretrain.sh 345 5e-4 1.5e-5 5e-5 0.01 tag_mspan synthetic_data
     # Eval
-    sh pretrain_eval.sh synthetic_data/synthetic_numeric_dev_drop_format.json synthetic_data/synthetic_textual_mixed_min3_max6_up0.7_dev.json prediction_num.json prediction_text.json tag_mspan ./pretrain_best.pt synthetic_data/roberta.large
+    sh pretrain_eval.sh synthetic_data/numeric_data_dev.json synthetic_data/textual_data_dev.json prediction_num.json prediction_text.json tag_mspan ./pretrain_best.pt synthetic_data/roberta.large
     # Numeric
     echo "Evaluating numeric data..."
-    python ../drop_eval.py --gold_path synthetic_data/synthetic_numeric_dev_drop_format.json --prediction_path prediction_num.json
+    python ../drop_eval.py --gold_path synthetic_data/numeric_data_dev.json --prediction_path prediction_num.json
     # Textual
     echo "Evaluating textual data..."
-    python ../drop_eval.py --gold_path synthetic_data/synthetic_textual_mixed_min3_max6_up0.7_dev.json --prediction_path prediction_text.json
+    python ../drop_eval.py --gold_path synthetic_data/textual_data_dev.json --prediction_path prediction_text.json
 # Simple multi-span extraction -- NumNet+
 else
     # Train
     sh pretrain.sh 345 5e-4 1.5e-5 5e-5 0.01 no synthetic_data
     # Eval
-    sh pretrain_eval.sh synthetic_numeric_dev_drop_format.json synthetic_data/synthetic_textual_mixed_min3_max6_up0.7_dev.json prediction_num.json prediction_text.json no ./pretrain_best.pt synthetic_data/roberta.large
+    sh pretrain_eval.sh synthetic_data/numeric_data_dev.json synthetic_data/textual_data_dev.json prediction_num.json prediction_text.json no ./pretrain_best.pt synthetic_data/roberta.large
     # Numeric
     echo "Evaluating numeric data..."
-    python ../drop_eval.py --gold_path synthetic_data/synthetic_numeric_dev_drop_format.json --prediction_path prediction_num.json
+    python ../drop_eval.py --gold_path synthetic_data/numeric_data_dev.json --prediction_path prediction_num.json
     # Textual
     echo "Evaluating textual data..."
-    python ../drop_eval.py --gold_path synthetic_data/synthetic_textual_mixed_min3_max6_up0.7_dev.json --prediction_path prediction_text.json
+    python ../drop_eval.py --gold_path synthetic_data/textual_data_dev.json --prediction_path prediction_text.json
 fi

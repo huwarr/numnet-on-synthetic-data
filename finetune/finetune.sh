@@ -23,7 +23,7 @@ if [ ${TMSPAN} = tag_mspan ]; then
   MODEL_CONFIG="--tag_mspan"# "--gcn_steps 3 --use_gcn --tag_mspan"
   if [ \( ! -e "${CACHED_TRAIN}" \)  -o \( ! -e "${CACHED_DEV}" \) ]; then
   echo "Preparing cached data."
-  python ../prepare_roberta_data.py --data_type drop --input_path ${DATA_DIR} --output_dir ${DATA_DIR} --tag_mspan
+  python ../prepare_roberta_data.py --data_type drop --input_path ${DATA_DIR} --roberta_path ../pretrain/synthetic_data/roberta.large --output_dir ${DATA_DIR} --tag_mspan
   fi
 else
   echo "Use mspan model..."
@@ -32,7 +32,7 @@ else
   MODEL_CONFIG=""# "--gcn_steps 3 --use_gcn"
   if [ \( ! -e "${CACHED_TRAIN}" \)  -o \( ! -e "${CACHED_DEV}" \) ]; then
   echo "Preparing cached data."
-  python ../prepare_roberta_data.py --data_type drop --input_path ${DATA_DIR} --output_dir ${DATA_DIR}
+  python ../prepare_roberta_data.py --data_type drop --input_path ${DATA_DIR} --roberta_path ../pretrain/synthetic_data/roberta.large --output_dir ${DATA_DIR}
   fi
 fi
 
@@ -42,7 +42,7 @@ DATA_CONFIG="--data_dir ${DATA_DIR} --save_dir ${SAVE_DIR}"
 TRAIN_CONFIG="--batch_size 16 --eval_batch_size 5 --max_epoch 10 --warmup 0.06 --optimizer adam \
               --learning_rate ${LR} --weight_decay ${WD} --seed ${SEED} --gradient_accumulation_steps 4 \
               --bert_learning_rate ${BLR} --bert_weight_decay ${BWD} --log_per_updates 100 --eps 1e-6"
-BERT_CONFIG="--roberta_model ../pretrain/roberta.large"
+BERT_CONFIG="--roberta_model ../pretrain/synthetic_data/roberta.large"
 
 
 echo "Start training..."
