@@ -24,14 +24,14 @@ if [ ${TMSPAN} = tag_mspan ]; then
   CACHED_DEV_NUMERIC=${DATA_DIR}/tmspan_cached_roberta_numeric_dev.pkl
   if [ \( ! -e "${CACHED_TRAIN_NUMERIC}" \)  -o \( ! -e "${CACHED_DEV_NUMERIC}" \) ]; then
   echo "Preparing cached numeric data."
-  python ../prepare_roberta_data.py --data_type numeric --input_path pretrain/${DATA_DIR} --output_dir pretrain/${DATA_DIR} --tag_mspan
+  python ../prepare_roberta_data.py --data_type numeric --input_path ${DATA_DIR} --output_dir ${DATA_DIR} --tag_mspan
   fi
   # Textual data
   CACHED_TRAIN_TEXTUAL=${DATA_DIR}/tmspan_cached_roberta_textual_train.pkl
   CACHED_DEV_TEXTUAL=${DATA_DIR}/tmspan_cached_roberta_textual_dev.pkl
   if [ \( ! -e "${CACHED_TRAIN_TEXTUAL}" \)  -o \( ! -e "${CACHED_DEV_TEXTUAL}" \) ]; then
   echo "Preparing cached textual data."
-  python ../prepare_roberta_data.py --data_type textual --input_path pretrain/${DATA_DIR} --output_dir pretrain/${DATA_DIR} --tag_mspan
+  python ../prepare_roberta_data.py --data_type textual --input_path ${DATA_DIR} --output_dir ${DATA_DIR} --tag_mspan
   fi
 else
   echo "Use mspan model..."
@@ -41,14 +41,14 @@ else
   CACHED_DEV_NUMERIC=${DATA_DIR}/cached_roberta_numeric_dev.pkl
   if [ \( ! -e "${CACHED_TRAIN_NUMERIC}" \)  -o \( ! -e "${CACHED_DEV_NUMERIC}" \) ]; then
   echo "Preparing cached numeric data."
-  python ../prepare_roberta_data.py --data_type numeric --input_path pretrain/${DATA_DIR} --output_dir pretrain/${DATA_DIR}
+  python ../prepare_roberta_data.py --data_type numeric --input_path ${DATA_DIR} --output_dir ${DATA_DIR}
   fi
   # Textual data
   CACHED_TRAIN_TEXTUAL=${DATA_DIR}/cached_roberta_textual_train.pkl
   CACHED_DEV_TEXTUAL=${DATA_DIR}/cached_roberta_textual_dev.pkl
   if [ \( ! -e "${CACHED_TRAIN_TEXTUAL}" \)  -o \( ! -e "${CACHED_DEV_TEXTUAL}" \) ]; then
   echo "Preparing cached textual data."
-  python ../prepare_roberta_data.py --data_type textual --input_path pretrain/${DATA_DIR} --output_dir pretrain/${DATA_DIR}
+  python ../prepare_roberta_data.py --data_type textual --input_path ${DATA_DIR} --output_dir ${DATA_DIR}
   fi
 fi
 
@@ -80,10 +80,10 @@ python ${CODE_DIR}/roberta_pretrain_predict.py \
 
 echo "Evaluation for numeric data..."
 python ../drop_eval.py \
-    --gold_path pretrain/${DATA_DIR}/synthetic_numeric_dev_drop_format.json \
-    --prediction_path pretrain/${SAVE_DIR}/dev_num.json
+    --gold_path ${DATA_DIR}/synthetic_numeric_dev_drop_format.json \
+    --prediction_path ${SAVE_DIR}/dev_num.json
 
 echo "Evaluation for textual data..."
 python ../drop_eval.py \
-    --gold_path pretrain/${DATA_DIR}/synthetic_textual_mixed_min3_max6_up0.7_dev.json \
-    --prediction_path pretrain/${SAVE_DIR}/dev_text.json
+    --gold_path ${DATA_DIR}/synthetic_textual_mixed_min3_max6_up0.7_dev.json \
+    --prediction_path ${SAVE_DIR}/dev_text.json

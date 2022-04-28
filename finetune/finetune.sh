@@ -23,7 +23,7 @@ if [ ${TMSPAN} = tag_mspan ]; then
   MODEL_CONFIG="--tag_mspan"# "--gcn_steps 3 --use_gcn --tag_mspan"
   if [ \( ! -e "${CACHED_TRAIN}" \)  -o \( ! -e "${CACHED_DEV}" \) ]; then
   echo "Preparing cached data."
-  python ../prepare_roberta_data.py --data_type drop --input_path finetune/${DATA_DIR} --output_dir finetune/${DATA_DIR} --tag_mspan
+  python ../prepare_roberta_data.py --data_type drop --input_path ${DATA_DIR} --output_dir ${DATA_DIR} --tag_mspan
   fi
 else
   echo "Use mspan model..."
@@ -32,7 +32,7 @@ else
   MODEL_CONFIG=""# "--gcn_steps 3 --use_gcn"
   if [ \( ! -e "${CACHED_TRAIN}" \)  -o \( ! -e "${CACHED_DEV}" \) ]; then
   echo "Preparing cached data."
-  python ../prepare_roberta_data.py --data_type drop --input_path finetune/${DATA_DIR} --output_dir finetune/${DATA_DIR}
+  python ../prepare_roberta_data.py --data_type drop --input_path ${DATA_DIR} --output_dir ${DATA_DIR}
   fi
 fi
 
@@ -62,5 +62,5 @@ python ${CODE_DIR}/roberta_predict.py \
     ${MODEL_CONFIG}
 
 python ../drop_eval.py \
-    --gold_path finetune/${DATA_DIR}/drop_dataset_dev.json \
-    --prediction_path finetune/${SAVE_DIR}/dev.json
+    --gold_path ${DATA_DIR}/drop_dataset_dev.json \
+    --prediction_path ${SAVE_DIR}/dev.json
