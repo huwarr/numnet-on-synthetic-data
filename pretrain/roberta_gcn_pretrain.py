@@ -164,7 +164,7 @@ def main():
         )
         # Like in GenBERT pretraining scheme, update best result according to score on textual data
         if eval_f1_text > best_result[0]:
-            save_prefix = os.path.join(args.save_dir, "checkpoint_best")
+            save_prefix = os.path.join(args.save_dir, "pretrain_best")
             model.save(save_prefix, epoch)
             best_result[0] = eval_f1_text
             best_result[1] = eval_f1_num

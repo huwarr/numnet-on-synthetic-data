@@ -26,7 +26,7 @@ echo "Starting evaluation..."
 TEST_CONFIG="--eval_batch_size 32 --pre_path ${PRE_PATH} --data_mode dev --dump_path_numeric ${DUMP_PATH_NUMERIC} --dump_path_textual ${DUMP_PATH_TEXTUAL} \
              --inf_path_numeric ${DATA_PATH_NUMERIC} --inf_path_textual ${DATA_PATH_TEXTUAL}"
 
-python roberta_predict.py \
+python roberta_pretrain_predict.py \
     ${TEST_CONFIG} \
     ${BERT_CONFIG} \
     ${MODEL_CONFIG}
