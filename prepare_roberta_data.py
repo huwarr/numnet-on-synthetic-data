@@ -36,7 +36,7 @@ if args.tag_mspan:
         ],
     )
 
-    data_format = "{}_data_{}.json"
+    data_format = "{}_dataset_{}.json"
 
     data_mode = ["train"]
     for dm in data_mode:
@@ -83,7 +83,7 @@ else:
         ],
     )
 
-    data_format = "{}_data_{}.json"
+    data_format = "{}_dataset_{}.json"
 
     data_mode = ["train"]
     for dm in data_mode:
