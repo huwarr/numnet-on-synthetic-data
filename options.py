@@ -96,3 +96,12 @@ def add_inference_args(parser: ArgumentParser):
     parser.add_argument(
         "--eval_batch_size", type=int, default=32, help="eval batch size."
     )
+
+def add_inference_finetune_args(parser: ArgumentParser):
+    parser.add_argument("--pre_path", type=str, help="Prepath")
+    parser.add_argument("--data_mode", type=str, help="inference data mode")
+    parser.add_argument("--inf_path", type=str, help="inference data path")
+    parser.add_argument("--dump_path", type=str, help="inference dump path")
+    parser.add_argument(
+        "--eval_batch_size", type=int, default=32, help="eval batch size."
+    )

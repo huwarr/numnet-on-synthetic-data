@@ -20,7 +20,7 @@ if [ ${TMSPAN} = tag_mspan ]; then
   echo "Use tag_mspan model..."
   CACHED_TRAIN=${DATA_DIR}/tmspan_cached_roberta_drop_train.pkl
   CACHED_DEV=${DATA_DIR}/tmspan_cached_roberta_drop_dev.pkl
-  MODEL_CONFIG="--tag_mspan"# "--gcn_steps 3 --use_gcn --tag_mspan"
+  MODEL_CONFIG="--tag_mspan"
   if [ \( ! -e "${CACHED_TRAIN}" \)  -o \( ! -e "${CACHED_DEV}" \) ]; then
   echo "Preparing cached data."
   python ../prepare_roberta_data.py --data_type drop --input_path ${DATA_DIR} --roberta_path ../pretrain/synthetic_data/roberta.large --output_dir ${DATA_DIR} --tag_mspan
@@ -29,7 +29,7 @@ else
   echo "Use mspan model..."
   CACHED_TRAIN=${DATA_DIR}/cached_roberta_drop_train.pkl
   CACHED_DEV=${DATA_DIR}/cached_roberta_drop_dev.pkl
-  MODEL_CONFIG=""# "--gcn_steps 3 --use_gcn"
+  MODEL_CONFIG=""
   if [ \( ! -e "${CACHED_TRAIN}" \)  -o \( ! -e "${CACHED_DEV}" \) ]; then
   echo "Preparing cached data."
   python ../prepare_roberta_data.py --data_type drop --input_path ${DATA_DIR} --roberta_path ../pretrain/synthetic_data/roberta.large --output_dir ${DATA_DIR}
