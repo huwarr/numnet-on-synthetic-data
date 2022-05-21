@@ -1,3 +1,11 @@
+import os
+import sys
+import inspect
+# for 'import options'
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir) 
+
 import json
 import torch
 import options
@@ -49,7 +57,7 @@ if args.cuda:
 print("Load from pre path {}.".format(args.pre_path))
 network.load_state_dict(torch.load(args.pre_path))
 
-print("Load data from {}.".format(args.inf_path))
+print("Load data from {} and {}.".format(args.inf_path_numeric, args.inf_path_textual))
 tokenizer = RobertaTokenizer.from_pretrained(args.roberta_model)
 if args.tag_mspan:
     inf_iter_num = TDropBatchGen(

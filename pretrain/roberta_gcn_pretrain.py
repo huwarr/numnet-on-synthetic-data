@@ -64,7 +64,7 @@ def main():
         dev_itr_text = TDropBatchGen(args, data_type='textual', data_mode="dev", tokenizer=tokenizer)
     
     num_train_steps = int(
-        args.max_epoch * len(train_itr_text) / args.gradient_accumulation_steps
+        args.max_epoch * (len(train_itr_text) + len(train_itr_num)) / args.gradient_accumulation_steps
     )
     logger.info("Num update steps {}!".format(num_train_steps))
 
@@ -92,9 +92,11 @@ def main():
     logger.info("Build optimizer etc...")
     model = DropBertModel(args, network, num_train_step=num_train_steps)
 
+    iter_train_itr_num = iter(train_itr_num)
+
     train_start = datetime.now()
     first = True
-    updates_diff = 0
+    #updates = 0
     # For stopping criteria
     loss_prev = float('inf')
     loss_curr = float('inf')
@@ -114,7 +116,7 @@ def main():
         for step, batch in enumerate(train_itr_text):
             # Textual data
             model.update(batch)
-            updates_1 = model.updates
+            #updates += model.updates
             train_loss_text = model.train_loss.avg
             train_em_text = model.em_avg.avg
             train_f1_text = model.f1_avg.avg
@@ -122,18 +124,16 @@ def main():
             # Numeric data
             while True:
                 try:
-                    batch = next(train_itr_num)  # sample next batch from numeric train data 
+                    batch = next(iter_train_itr_num)  # sample next batch from numeric train data 
                     break
                 except StopIteration:       # end of epoch: reset and shuffle
                     train_itr_num.reset()
+                    iter_train_itr_num = iter(train_itr_num)
             model.update(batch)
-            updates_2 = model.updates
+            #updates += model.updates
             train_loss_num = model.train_loss.avg
             train_em_num = model.em_avg.avg
             train_f1_num = model.f1_avg.avg
-
-            updates_diff += updates_2 - updates_1
-            updates = updates_2 - updates_diff
 
             if (
                 (step + 1) % args.gradient_accumulation_steps
@@ -142,7 +142,7 @@ def main():
             ):
                 logger.info(
                     "Updates[{0:6}], Textual: train loss[{1:.5f}] train em[{2:.5f}] f1[{3:.5f}], Numeric: train loss[{4:.5f}] train em[{5:.5f}] f1[{6:.5f}], remaining[{7}]".format(
-                        updates,
+                        model.updates,
                         train_loss_text,
                         train_em_text,
                         train_f1_text,
@@ -165,18 +165,17 @@ def main():
         total_num_num, eval_loss_num, eval_em_num, eval_f1_num = model.evaluate(dev_itr_num)
 
         logger.info(
-            "Eval, Textual: {0:6} examples, result in epoch {1:.5f}, eval loss {2:.5f}, eval em {3:.5f} eval f1 {4:.5f}, Numeric: {5:6} examples, result in epoch {6:.5f}, eval loss {7:.5f}, eval em {8:.5f} eval f1 {9:.5f}.".format(
-                total_num_text, eval_loss_text, eval_em_text, eval_f1_text, total_num_num, eval_loss_num, eval_em_num, eval_f1_num
+            "Eval, Textual: {0:6} examples, result in epoch {1:2}, eval loss {2:.5f}, eval em {3:.5f} eval f1 {4:.5f}, Numeric: {5:6} examples, result in epoch {6:2}, eval loss {7:.5f}, eval em {8:.5f} eval f1 {9:.5f}.".format(
+                total_num_text, epoch, eval_loss_text, eval_em_text, eval_f1_text, total_num_num, epoch, eval_loss_num, eval_em_num, eval_f1_num
             )
         )
         # Like in GenBERT pretraining scheme, update best result according to score on textual data
         if eval_f1_text > best_result[0]:
             save_prefix = os.path.join(args.save_dir, "pretrain_best")
             model.save(save_prefix, epoch)
-            best_result[0] = eval_f1_text
-            best_result[1] = eval_f1_num
+            best_result = (eval_f1_text, eval_f1_num)
             logger.info(
-                "Best textual eval F1 {0:.5f}, with numeric eval F1 {1:.5f}, at epoch {3}".format(
+                "Best textual eval F1 {0:.5f}, with numeric eval F1 {1:.5f}, at epoch {2}".format(
                     best_result[0], best_result[1], epoch
                 )
             )

@@ -24,6 +24,8 @@ Modify config.json from "output_hidden_states": false to "output_hidden_states":
 
 cd ../..
 
+# !pip install --upgrade google-cloud-storage
+
 # Tag based multi-span extraction -- NumNet+ v2
 if [ ${TMSPAN} = tag_mspan ]; then
     # Train
