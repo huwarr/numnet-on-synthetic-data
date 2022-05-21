@@ -29,7 +29,7 @@ cd ../..
 # Tag based multi-span extraction -- NumNet+ v2
 if [ ${TMSPAN} = tag_mspan ]; then
     # Train
-    sh pretrain.sh 345 5e-4 1.5e-5 5e-5 0.01 tag_mspan synthetic_data
+    sh pretrain.sh 345 1e-5 1e-5 5e-5 0.01 tag_mspan synthetic_data
     # Eval
     sh pretrain_eval.sh synthetic_data/numeric_data_dev.json synthetic_data/textual_data_dev.json prediction_num.json prediction_text.json tag_mspan ./pretrain_best.pt synthetic_data/roberta.large
     # Numeric
@@ -41,7 +41,7 @@ if [ ${TMSPAN} = tag_mspan ]; then
 # Simple multi-span extraction -- NumNet+
 else
     # Train
-    sh pretrain.sh 345 5e-4 1.5e-5 5e-5 0.01 no synthetic_data
+    sh pretrain.sh 345 1e-5 1e-5 5e-5 0.01 no synthetic_data
     # Eval
     sh pretrain_eval.sh synthetic_data/numeric_data_dev.json synthetic_data/textual_data_dev.json prediction_num.json prediction_text.json no ./pretrain_best.pt synthetic_data/roberta.large
     # Numeric

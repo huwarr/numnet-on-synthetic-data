@@ -5,7 +5,7 @@ source activate numnet_venv_1_0
 set -xe
 
 SEED=$1
-LR=$2
+LR=$2 # 1e-5,   max_epochs = 5, warmup = 0.1, batch_size = 240-624
 BLR=$3
 WD=$4
 BWD=$5
@@ -55,7 +55,7 @@ fi
 
 SAVE_DIR=${BASE_DIR}
 DATA_CONFIG="--data_dir ${DATA_DIR} --save_dir ${SAVE_DIR}"
-TRAIN_CONFIG="--batch_size 16 --eval_batch_size 5 --max_epoch 10 --warmup 0.06 --optimizer adam \
+TRAIN_CONFIG="--batch_size 128 --eval_batch_size 5 --max_epoch 5 --warmup 0.1 --optimizer adam \
               --learning_rate ${LR} --weight_decay ${WD} --seed ${SEED} --gradient_accumulation_steps 4 \
               --bert_learning_rate ${BLR} --bert_weight_decay ${BWD} --log_per_updates 100 --eps 1e-6"
 BERT_CONFIG="--roberta_model ${DATA_DIR}/roberta.large"
