@@ -62,10 +62,35 @@ NumNet code was taken from: [github](https://github.com/llamazing/numnet_plus).
 
 `cd ../..`
 
-- Train with tag based multi-span extraction (NumNet+ v2):
+- Tag based multi-span extraction (NumNet+ v2):
 
   `sh pretrain.sh 345 1e-5 1e-5 5e-5 0.01 tag_mspan synthetic_data`
 
 - Simple multi-span extraction (NumNet+):
 
   `sh pretrain.sh 345 1e-5 1e-5 5e-5 0.01 no synthetic_data`
+
+
+## FINETUNING
+
+`cd ../finetune`
+
+### Data
+
+- Download DROP data.
+
+  `wget -O drop_dataset.zip https://s3-us-west-2.amazonaws.com/allennlp/datasets/drop/drop_dataset.zip`
+  
+  `unzip drop_dataset.zip`
+  
+### Finetune
+
+**!NB**: The type of the model (i.e. NumNet+ or NumNet+v2) should be the same, as in pretraining.
+
+- Tag based multi-span extraction (NumNet+ v2):
+
+  `sh finetune.sh 345 3e-5 1.5e-5 5e-5 0.01 tag_mspan drop_dataset`
+
+- Simple multi-span extraction (NumNet+):
+
+  `sh finetune.sh 345 3e-5 1.5e-5 5e-5 0.01 no drop_dataset`
