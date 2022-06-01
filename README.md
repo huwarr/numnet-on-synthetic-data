@@ -2,11 +2,13 @@
 
 Pretraining NumNet+ on synthetic numeric and textual data, the way GenBERT was.
 
+Training scheme consists of alternating between textual and numerical batches during one training step.
+
 ## Sources
 
 Data and pretraining scheme: [github](https://github.com/ag1988/injecting_numeracy/tree/master/pre_training).
 
-NumNet code was taken from: [github](https://github.com/llamazing/numnet_plus).
+NumNet+ code was taken from: [github](https://github.com/llamazing/numnet_plus).
 
 ## Requirements
 
@@ -68,7 +70,7 @@ NumNet code was taken from: [github](https://github.com/llamazing/numnet_plus).
 
 - Simple multi-span extraction (NumNet+):
 
-  `sh pretrain.sh 345 1e-5 1e-5 5e-5 0.01 no synthetic_data`
+  `sh pretrain.sh 345 1e-5 1e-5 5e-5 0.01 mspan synthetic_data`
 
 
 ## FINETUNING
@@ -93,4 +95,4 @@ NumNet code was taken from: [github](https://github.com/llamazing/numnet_plus).
 
 - Simple multi-span extraction (NumNet+):
 
-  `sh finetune.sh 345 3e-5 1.5e-5 5e-5 0.01 no drop_dataset`
+  `sh finetune.sh 345 3e-5 1.5e-5 5e-5 0.01 mspan drop_dataset`
